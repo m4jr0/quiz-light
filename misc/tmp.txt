@@ -1,0 +1,6 @@
+cd ~/Documents/projects/quiz-light/QuizLight && npx react-native start
+
+cd ~/Documents/projects/quiz-light/QuizLight && npx react-native run-android
+cd ~/Documents/projects/quiz-light/QuizLight && npx react-native run-android --variant=release
+
+cd ~/Documents/projects/quiz-light
