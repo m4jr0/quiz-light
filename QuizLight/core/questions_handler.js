@@ -432,12 +432,12 @@ class PrivateQuestionsHandler {
 
     if (
       localQuestion.id !== parseInt(remoteQuestion[0], 10) ||
-      localQuestion.grade !== remoteQuestion[1] ||
-      localQuestion.question !== remoteQuestion[2] ||
-      localQuestion.answer !== remoteQuestion[3] ||
+      localQuestion.grade !== remoteQuestion[1].trim() ||
+      localQuestion.question !== remoteQuestion[2].trim() ||
+      localQuestion.answer !== remoteQuestion[3].trim() ||
       (localQuestion.notes !== null && remoteQuestion.length < 5) ||
       (localQuestion.notes !== null &&
-        localQuestion.notes !== remoteQuestion[4])
+        localQuestion.notes !== remoteQuestion[4].trim())
     ) {
       return {
         isUpdated: false,
