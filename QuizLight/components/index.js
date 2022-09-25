@@ -3,6 +3,7 @@ export {CardAnswer} from './CardAnswer';
 export {CardHeader} from './CardHeader';
 export {CardNotes} from './CardNotes';
 export {CardQuestion} from './CardQuestion';
+export {FabButton} from './FabButton';
 export {FooterButton} from './FooterButton';
 export {LabeledPopCheckbox} from './LabeledPopCheckbox';
 export {LoadingCard} from './LoadingCard';

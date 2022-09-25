@@ -5,6 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {WelcomeContainer} from './screens/Welcome';
 import {LoadingContainer} from './screens/Loading';
 import {QuizContainer} from './screens/Quiz';
+import {QuizSelectorContainer} from './screens/QuizSelector';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +14,7 @@ export const QuizLight = () => {
     <NavigationContainer theme={DarkTheme}>
       <Stack.Navigator>
         <Stack.Screen name="Welcome" component={WelcomeContainer} />
+        <Stack.Screen name="QuizSelector" component={QuizSelectorContainer} />
         <Stack.Screen
           name="Loading"
           component={LoadingContainer}

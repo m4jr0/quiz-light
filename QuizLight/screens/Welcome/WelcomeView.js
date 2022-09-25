@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Text, ToastAndroid, View} from 'react-native';
 
 import {
+  FabButton,
   FooterButton,
   LabeledPopCheckbox,
   PopCheckboxes,
@@ -18,8 +19,9 @@ export const WelcomeView = props => {
   }
 
   return (
-    <View style={style.welcomeContainer}>
+    <View style={style.basicContainer}>
       <View style={style.welcomeParameters}>
+        <Text style={[style.label, style.welcomeTitle]}>{props.quizName}</Text>
         <Text style={[style.label, style.welcomeLabel]}>Grades</Text>
         <PopCheckboxes checkboxDescrs={props.gradeCheckboxes} />
         <Text style={[style.label, style.welcomeLabel]}>Misc</Text>
@@ -33,14 +35,20 @@ export const WelcomeView = props => {
             label="Reload Cache"
             checked={props.isReloadCache}
             onValueChange={props.onIsReloadCacheValueChange}
+            disabled={props.isForcedReload}
           />
         </View>
+        <FabButton
+          title="Quiz"
+          onPress={props.onQuizSelectorButtonPress}
+          style={style.quizSelectorButton}
+        />
       </View>
       <FooterButton
         disabled={!props.isReady}
         title="Start"
         onPress={props.onStartButtonPress}
-        style={style.startButton}
+        style={style.litButton}
       />
     </View>
   );

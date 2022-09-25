@@ -6,6 +6,9 @@ import {QuestionsHandler} from '../../core/questions_handler';
 import {Grade} from '../../core';
 
 export const QuizContainer = ({navigation, route}) => {
+  const defaultWelcomeScreenMessage = 'Well done, lad.';
+
+  const quizDescr = route.params.quizDescr;
   const gradeIds = route.params.gradeIds;
   const isReversed = route.params.isReversed;
   const [isRevealed, setIsRevealed] = useState(false);
@@ -16,25 +19,28 @@ export const QuizContainer = ({navigation, route}) => {
   const isMessageDisplayed = useRef(false);
   let filter = useMemo(() => [], []);
 
-  const goToWelcomeScreen = useCallback(() => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 1,
-        routes: [
-          {
-            name: 'Welcome',
-            params: {
-              welcomeMessage: 'Well done, lad.',
+  const goToWelcomeScreen = useCallback(
+    (welcomeScreenMessage = defaultWelcomeScreenMessage) => {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 1,
+          routes: [
+            {
+              name: 'Welcome',
+              params: {
+                welcomeMessage: welcomeScreenMessage,
+              },
             },
-          },
-        ],
-      }),
-    );
-  }, [navigation]);
+          ],
+        }),
+      );
+    },
+    [navigation],
+  );
 
   const setNextCard = useCallback(() => {
     QuestionsHandler.getInstance()
-      .getRandomQuestion(gradeIds, filter)
+      .getRandomQuestion(quizDescr, gradeIds, filter)
       .then(newCard => {
         if (!newCard) {
           goToWelcomeScreen();
@@ -54,12 +60,18 @@ export const QuizContainer = ({navigation, route}) => {
         setCount(c => c - 1);
         setCard(newCard);
       });
-  }, [gradeIds, isReversed, filter, goToWelcomeScreen]);
+  }, [quizDescr, gradeIds, isReversed, filter, goToWelcomeScreen]);
 
   const updateGrade = grade => {
     setIsLoading(true);
+
+    if (quizDescr === null) {
+      goToWelcomeScreen('No quiz available.');
+      return;
+    }
+
     QuestionsHandler.getInstance()
-      .updateQuestion(card.id, grade)
+      .updateQuestion(quizDescr, card.id, grade)
       .then(response => {
         setIsLoading(false);
 
@@ -74,12 +86,12 @@ export const QuizContainer = ({navigation, route}) => {
 
   useEffect(() => {
     QuestionsHandler.getInstance()
-      .getQuestionCount(gradeIds)
+      .getQuestionCount(quizDescr, gradeIds)
       .then(itemCount => {
         setCount(itemCount + 1);
         setNextCard();
       });
-  }, [gradeIds, setNextCard]);
+  }, [quizDescr, gradeIds, setNextCard]);
 
   if (message) {
     if (!isMessageDisplayed.current) {

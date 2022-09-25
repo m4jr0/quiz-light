@@ -1,6 +1,14 @@
 import {StyleSheet} from 'react-native';
 
 export const style = StyleSheet.create({
+  basicContainer: {
+    borderRadius: 5,
+    flex: 1,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 10,
+    parddingBottom: 10,
+  },
   card: {
     borderRadius: 5,
     flex: 1,
@@ -74,6 +82,27 @@ export const style = StyleSheet.create({
   cardTag: {
     color: '#ffab00',
   },
+  fabButton: {
+    backgroundColor: '#607d8b',
+    borderRadius: 50,
+    bottom: 20,
+    height: 80,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 20,
+    width: 80,
+  },
+  fabButtonDisabled: {
+    backgroundColor: '#455a64',
+  },
+  fabButtonTitle: {
+    color: 'white',
+    fontSize: 15,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    textTransform: 'uppercase',
+  },
   footerButton: {
     alignItems: 'center',
     backgroundColor: '#607d8b',
@@ -109,7 +138,11 @@ export const style = StyleSheet.create({
     overflow: 'hidden',
     width: 30,
   },
+  labeledPopCheckboxDisabled: {
+    backgroundColor: '#505050',
+  },
   labeledPopCheckboxChecked: {},
+  labeledPopCheckboxCheckedDisabled: {},
   labeledPopCheckboxContainer: {
     flexDirection: 'row',
     marginBottom: 20,
@@ -123,8 +156,12 @@ export const style = StyleSheet.create({
     overflow: 'hidden',
     width: 20,
   },
+  labeledPopCheckboxInsideDisabled: {},
   labeledPopCheckboxInsideChecked: {
     backgroundColor: '#ffab00',
+  },
+  labeledPopCheckboxInsideCheckedDisabled: {
+    backgroundColor: 'grey',
   },
   labeledPopCheckboxLabel: {
     color: 'white',
@@ -174,6 +211,9 @@ export const style = StyleSheet.create({
     position: 'absolute',
     width: 300,
   },
+  litButton: {
+    backgroundColor: '#ffab00',
+  },
   popCheckbox: {
     alignItems: 'center',
     backgroundColor: '#2d3f47',
@@ -211,21 +251,24 @@ export const style = StyleSheet.create({
   quizCounterNumber: {
     color: '#ffab00',
   },
-  startButton: {
+  quizSelectorButton: {
     backgroundColor: '#ffab00',
   },
-  welcomeContainer: {
-    borderRadius: 5,
-    flex: 1,
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 10,
-    parddingBottom: 10,
+  quizSelectorContainer: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'space-between',
+  },
+  quizSelectorMenu: {
+    backgroundColor: '#ffab00',
+    height: 75,
+    margin: 50,
+    width: 300,
   },
   welcomeLabel: {
-    textAlign: 'center',
     marginBottom: 10,
     marginTop: 25,
+    textAlign: 'center',
   },
   welcomeParameters: {
     backgroundColor: '#212121',
@@ -233,5 +276,13 @@ export const style = StyleSheet.create({
     flex: 1,
     margin: 0,
     padding: 15,
+  },
+  welcomeTitle: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    marginTop: 25,
+    textAlign: 'center',
+    textTransform: 'uppercase',
   },
 });

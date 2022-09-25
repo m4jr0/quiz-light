@@ -69,6 +69,7 @@ class PrivateQuestionsHandler {
             resolve(results);
           },
           error => {
+            console.error(error);
             reject(error);
           },
         );
@@ -128,6 +129,7 @@ class PrivateQuestionsHandler {
 
     await this.executeQuery(
       `CREATE TABLE IF NOT EXISTS questions (
+        quiz_id VARCHAR(16),
         id INTEGER PRIMARY KEY NOT NULL, 
         grade_id INTEGER,
         question VARCHAR(16), 
@@ -162,25 +164,25 @@ class PrivateQuestionsHandler {
     );
   }
 
-  async reloadQuestions() {
+  async reloadQuestions(quizDescr) {
     if (!this.isInitialized) {
       return;
     }
 
     await this.emptyQuestions();
     await this.initQuestions();
-    return await this.getQuestions();
+    return await this.getQuestions(quizDescr);
   }
 
-  async getQuestions() {
+  async getQuestions(quizDescr) {
     if (!this.isInitialized) {
       return false;
     }
 
     const response = await this.handler.getValues(
-      Config.SPREADSHEET_ID,
-      Config.SHEET_NAME,
-      Config.SHEET_RANGE,
+      quizDescr.spreadsheetId,
+      quizDescr.sheetName,
+      quizDescr.sheetRange,
     );
 
     if (response === null) {
@@ -197,6 +199,7 @@ class PrivateQuestionsHandler {
         continue;
       }
 
+      const quizId = quizDescr.quizId;
       const id = parseInt(row[0], 10);
       const gradeName = row[1].trim();
       const question = row[2].trim();
@@ -210,6 +213,7 @@ class PrivateQuestionsHandler {
       const notes = row.length > 4 ? row[4].trim() : '';
 
       sqlValues += `(
+        '${quizId}',
         ${id},
         '${grade.id}',
         '${this.sanitizeStr(question)}',
@@ -223,15 +227,15 @@ class PrivateQuestionsHandler {
     }
 
     await this.executeQuery(
-      `REPLACE INTO questions (id, grade_id, question, answer, notes) VALUES ${sqlValues}`,
+      `REPLACE INTO questions (quiz_id, id, grade_id, question, answer, notes) VALUES ${sqlValues}`,
     );
 
     return true;
   }
 
-  async getQuestion(id) {
+  async getQuestion(quizDescr, id) {
     const questions = await this.getData(
-      `SELECT * FROM questions WHERE id = ${id}`,
+      `SELECT * FROM questions WHERE quiz_id = '${quizDescr.quizId}' AND id = ${id}`,
     );
 
     if (questions === null) {
@@ -307,7 +311,7 @@ class PrivateQuestionsHandler {
     };
   }
 
-  async getRandomQuestion(gradeIds = null, idsToFilter = null) {
+  async getRandomQuestion(quizDescr, gradeIds = null, idsToFilter = null) {
     if (!this.isInitialized) {
       return null;
     }
@@ -326,6 +330,14 @@ class PrivateQuestionsHandler {
       filter += ` WHERE ${idFilter}`;
     }
 
+    if (!filter) {
+      filter += ' WHERE ';
+    } else {
+      filter += ' AND ';
+    }
+
+    filter += `quiz_id = '${quizDescr.quizId}'`;
+
     const questions = await this.getData(`SELECT * FROM questions 
       ${filter} 
       ORDER BY RANDOM()
@@ -338,7 +350,7 @@ class PrivateQuestionsHandler {
     return this.getFormattedQuestion(questions(0));
   }
 
-  async getQuestionCount(grades = null) {
+  async getQuestionCount(quizDescr, grades = null) {
     if (!this.isInitialized) {
       return;
     }
@@ -356,7 +368,7 @@ class PrivateQuestionsHandler {
     const gradeFilter = this.generateGradeFilter(grades);
 
     if (gradeFilter !== null) {
-      filter = ` WHERE ${gradeFilter}`;
+      filter = ` WHERE ${gradeFilter} AND quiz_id = '${quizDescr.quizId}'`;
     } else {
       filter = '';
     }
@@ -380,7 +392,7 @@ class PrivateQuestionsHandler {
     return countDescr[selectExpr];
   }
 
-  async updateQuestion(id, newGrade) {
+  async updateQuestion(quizDescr, id, newGrade) {
     if (!this.isInitialized) {
       return {
         isUpdated: false,
@@ -389,7 +401,7 @@ class PrivateQuestionsHandler {
     }
 
     const rowIndex = id + 1;
-    const localQuestion = await this.getQuestion(id);
+    const localQuestion = await this.getQuestion(quizDescr, id);
 
     if (localQuestion === null) {
       return {
@@ -400,8 +412,8 @@ class PrivateQuestionsHandler {
     }
 
     const remoteQuestions = await this.handler.getValues(
-      Config.SPREADSHEET_ID,
-      Config.SHEET_NAME,
+      quizDescr.spreadsheetId,
+      quizDescr.sheetName,
       `${rowIndex}:${rowIndex}`,
     );
 
@@ -447,8 +459,8 @@ class PrivateQuestionsHandler {
     }
 
     const isUpdated = await this.handler.updateValues(
-      Config.SPREADSHEET_ID,
-      Config.SHEET_NAME,
+      quizDescr.spreadsheetId,
+      quizDescr.sheetName,
       `B${rowIndex}`,
       'RAW',
       [[newGrade.name]],
@@ -457,7 +469,7 @@ class PrivateQuestionsHandler {
     if (isUpdated) {
       this.executeQuery(`UPDATE questions
       SET grade_id = '${newGrade.id}'
-      WHERE id = ${id}`);
+      WHERE quiz_id = '${quizDescr.quizId}' AND id = ${id}`);
     }
 
     return {
